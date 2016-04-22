@@ -4,7 +4,7 @@
     "global": { }, 
     "components": {
 	"slider-appmaster": { }, 
-        “BIOLOGICSMANUFACTURINGUI": {
+        "BIOLOGICSMANUFACTURINGUI": {
             "yarn.role.priority": "1", 
             "yarn.component.instances": "1", 
             "yarn.memory": "256"

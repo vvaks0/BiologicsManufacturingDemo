@@ -1,14 +1,14 @@
 {
 "schemaVersion": "2.1",
 "application": {
-        "name": “BIOLOGICSMANUFACTURINGUI",
+        "name": "BIOLOGICSMANUFACTURINGUI",
         "components": [
             {
-                "name": “BIOLOGICSMANUFACTURINGUI",
+                "name": "BIOLOGICSMANUFACTURINGUI",
                 "type": "docker",
                 "dockerContainers": [
                     {
-                        "name": “biologicsmanufacturingui",
+                        "name": "biologicsmanufacturingui",
                         "commandPath": "/usr/bin/docker",
                         "image": "vvaks/biologicsmanufacturingui",
                         "ports": [{"containerPort" : "8090", "hostPort" : "8090"}]

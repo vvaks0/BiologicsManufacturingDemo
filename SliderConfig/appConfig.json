@@ -3,10 +3,10 @@
     "metadata": {},
     "global": {},
     "components": {
-            “biologicsmanufacturingui": {
-                “biologicsmanufacturingui.commandPath": "/usr/bin/docker", 
-                “biologicsmanufacturingui.options":"-d --net=host",
-                “biologicsmanufacturingui.statusCommand":"docker inspect -f {{.State.Running}} ${CONTAINER_ID} | grep true"
+            "BIOLOGICSMANUFACTURINGUI": {
+                "biologicsmanufacturingui.commandPath": "/usr/bin/docker", 
+                "biologicsmanufacturingui.options":"-d --net=host",
+                "biologicsmanufacturingui.statusCommand":"docker inspect -f {{.State.Running}} ${CONTAINER_ID} | grep true"
             },
 	    "COMETD": {
                 "cometd.commandPath": "/usr/bin/docker",

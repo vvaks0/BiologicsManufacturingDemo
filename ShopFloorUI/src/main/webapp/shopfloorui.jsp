@@ -115,6 +115,22 @@ div#bodyContainer{
     /* box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); */
 }
 
+.processTextSubDiv {
+    width: 96%;
+    height: 45%;
+    margin-top: 2px;
+    background: #ffffff;
+    border-top: 1px solid #D4D4D4;
+    border-left: 1px solid #D4D4D4;
+    border-bottom: 1px solid #D4D4D4;
+    border-right: 1px solid #D4D4D4;
+    float: left;
+    position: relative;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px
+    /* box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); */
+}
+
 .gaugeDiv{
 	padding: 10px; 
     width: 110px;
@@ -307,6 +323,9 @@ div#deviceContainer{
 				currentPH = message.data.phLevel;
 				currentOxygen = message.data.disolvedOxygen * 100;
 				currentTimeHours = message.data.hoursFromStart;
+				if(currentTimeHours == 0){
+					document.getElementById("prodAlert").innerHTML = '';
+				}
 				currentBatch = message.data.batchNumber;
 				console.log(currentTemp + " " + currentPH + "" + currentOxygen);
 				
@@ -345,12 +364,15 @@ div#deviceContainer{
 				flowTempChart.draw(flowTempChartData, flowTempChartOptions);
 			}else if(message.channel == alertChannel){
 				console.log(message);
-				var alertType = data.message.alertType;
+				var alertType = message.data.alertType;
+				var alertDesc = document.getElementById("prodAlert").innerHTML
 				if(alertType == "PH"){
-					document.getElementById("prodAlert").innerHTML = message.data.alertDesc;
+					document.getElementById("prodAlert").innerHTML = alertDesc + '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
 				}else if(alertType == "O2"){
-					document.getElementById("prodAlert").innerHTML = message.data.alertDesc;
+					document.getElementById("prodAlert").innerHTML = alertDesc + '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
 				}
+			}else{
+				console.log(message)
 			}	
 		});
   }
@@ -730,8 +752,8 @@ div#deviceContainer{
 		</div>
 		<div id="prodCultureDiv" class="leftSidePaneDivider" onclick="showFermentation(this.id)">
 			<div id="prodTextContainer" class="processTextDiv">
-				<div id="prodText" class="processTextDiv">Production Culture</div>
-				<div id="prodAlert" class="processTextDiv"></div>
+				<div id="prodText" class="processTextSubDiv">Production Culture</div>
+				<div id="prodAlert" class="processTextSubDiv"></div>
 			</div>
 			<div id="prodImage" class="processImageDiv"><image src="images/ge_wave_200.png"></image></div>
 		</div>
@@ -743,8 +765,8 @@ div#deviceContainer{
 		</div>
 		<div id="filtrationDiv" class="leftSidePaneDivider" onclick="showFiltration(this.id)">
 			<div id="filtrationTextContainer" class="processTextDiv">
-				<div id="filtrationText" class="processTextDiv">Sterile Filtration</div>
-				<div id="filtrationAlert" class="processTextDiv"></div>
+				<div id="filtrationText" class="processTextSubDiv">Sterile Filtration</div>
+				<div id="filtrationAlert" class="processTextSubDiv"></div>
 			</div>
 			<div id="filtrationImage" class="processImageDiv"><image src="images/ge_akta_crossflow.png"></div>
 		</div>

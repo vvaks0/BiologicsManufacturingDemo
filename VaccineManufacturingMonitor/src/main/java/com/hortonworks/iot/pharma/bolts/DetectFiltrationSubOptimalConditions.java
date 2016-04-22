@@ -10,6 +10,7 @@ import org.cometd.client.transport.LongPollingTransport;
 import org.eclipse.jetty.client.HttpClient;
 
 import com.hortonworks.iot.pharma.events.BioReactorStatus;
+import com.hortonworks.iot.pharma.events.FiltrationStatus;
 import com.hortonworks.iot.pharma.util.Constants;
 
 import backtype.storm.task.OutputCollector;
@@ -20,7 +21,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
-public class DetectSubOptimalConditions extends BaseRichBolt{
+public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
 
 	private String pubSubUrl = Constants.pubSubUrl;
 	private String alertChannel = Constants.alertChannel;
@@ -28,21 +29,20 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 	private OutputCollector collector;
 	
 	public void execute(Tuple tuple)  {
-		BioReactorStatus bioReactorStatus = (BioReactorStatus) tuple.getValueByField("BioReactorStatus");
+		FiltrationStatus filtrationStatus = (FiltrationStatus) tuple.getValueByField("FiltrationStatus");
 		Map<String, Object> data = new HashMap<String, Object>();
 		
-		if(bioReactorStatus.getDisolvedOxygen() < .07){
-			data.put("serialNumber", bioReactorStatus.getSerialNumber());
-			data.put("alertType", "O2");
-			data.put("alertDec", "Disolved Oxygen has dropped to critical level.");
+		if(filtrationStatus.getInternalPressure() < 65){
+			data.put("serialNumber", filtrationStatus.getSerialNumber());
+			data.put("alertType", "Pressure");
+			data.put("alertDec", "Pressure has reached critical level");
 			bayuexClient.getChannel(alertChannel).publish(data);
-		}if(bioReactorStatus.getPhLevel() < 6.2){
-			data.put("serialNumber", bioReactorStatus.getSerialNumber());
-			data.put("alertType", "PH");
-			data.put("alertDesc", "PH levels have dropped to critical level.");
+		}if(filtrationStatus.getFlowRate() < 65){
+			data.put("serialNumber", filtrationStatus.getSerialNumber());
+			data.put("alertType", "FlowRate");
+			data.put("alertDesc", "Flow rate is reached critical level");
 			bayuexClient.getChannel(alertChannel).publish(data);
 		}
-		
 		
 		collector.ack(tuple);
 	}

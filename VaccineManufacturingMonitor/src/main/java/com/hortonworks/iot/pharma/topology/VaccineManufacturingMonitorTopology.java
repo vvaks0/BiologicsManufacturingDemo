@@ -78,11 +78,11 @@ public class VaccineManufacturingMonitorTopology {
 		builder.setSpout("IncomingFiltrationKafkaSpout", incomingFiltrationEventsKafkaSpout);
 		builder.setBolt("PublishFiltrationEvents", new PublishFiltrationEvents(), 1).shuffleGrouping("IncomingFiltrationKafkaSpout");
      
-		LocalCluster cluster = new LocalCluster();
+		//LocalCluster cluster = new LocalCluster();
 		conf.setNumWorkers(1);
 		conf.setMaxSpoutPending(5000);
 		conf.setMaxTaskParallelism(1);
-		cluster.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology());
+		//cluster.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology());
        
 		try {
 			StormSubmitter.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology());

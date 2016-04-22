@@ -13,6 +13,7 @@ import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy.Units;
 import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy;
 
+import com.hortonworks.iot.pharma.bolts.DetectFiltrationSubOptimalConditions;
 import com.hortonworks.iot.pharma.bolts.DetectSubOptimalConditions;
 import com.hortonworks.iot.pharma.bolts.PublishDeviceEvents;
 import com.hortonworks.iot.pharma.bolts.PublishFiltrationEvents;
@@ -77,7 +78,8 @@ public class VaccineManufacturingMonitorTopology {
     
 		builder.setSpout("IncomingFiltrationKafkaSpout", incomingFiltrationEventsKafkaSpout);
 		builder.setBolt("PublishFiltrationEvents", new PublishFiltrationEvents(), 1).shuffleGrouping("IncomingFiltrationKafkaSpout");
-     
+		builder.setBolt("DetectFiltrationSubOptimalConditions", new DetectFiltrationSubOptimalConditions(), 1).shuffleGrouping("PublishFiltrationEvents");
+		
 		//LocalCluster cluster = new LocalCluster();
 		conf.setNumWorkers(1);
 		conf.setMaxSpoutPending(5000);

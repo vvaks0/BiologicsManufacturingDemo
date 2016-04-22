@@ -1,0 +1,32 @@
+{
+"schemaVersion": "2.1",
+"application": {
+        "name": “BIOLOGICSMANUFACTURINGUI",
+        "components": [
+            {
+                "name": “BIOLOGICSMANUFACTURINGUI",
+                "type": "docker",
+                "dockerContainers": [
+                    {
+                        "name": “biologicsmanufacturingui",
+                        "commandPath": "/usr/bin/docker",
+                        "image": "vvaks/biologicsmanufacturingui",
+                        "ports": [{"containerPort" : "8090", "hostPort" : "8090"}]
+                    }
+                ]
+            },
+	    {
+                "name": "COMETD",
+                "type": "docker",
+                "dockerContainers": [
+                    {
+                        "name": "cometd",
+                        "commandPath": "/usr/bin/docker",
+                        "image": "vvaks/cometd",
+                        "ports": [{"containerPort" : "8091", "hostPort" : "8091"}]
+                    }
+                ]
+            }
+	]
+    }
+}

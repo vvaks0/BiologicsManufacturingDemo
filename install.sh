@@ -192,16 +192,19 @@ wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.re
 yum install -y apache-maven
 
 echo "*********************************Building Storm Topology"
-# Build from source
+# Build Storm Topology from source
 cd VaccineManufacturingMonitor
 mvn clean package
 cp -vf target/VaccineManufacturingMonitor-0.0.1-SNAPSHOT.jar /home/storm
+cd ..
 
 echo "*********************************Building Simulator"
-# Build from source
-#cd ../VaccineManufacturingSimulator
-#mvn clean package
-#cp -vf target/VaccineManufacturingSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar ../
+#Build Device Simulator from source
+git clone https://github.com/vakshorton/DataSimulators.git
+cd DataSimulators/DeviceSimulator
+mvn clean package
+cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar ../..
+cd ../..
 
 #Start Kafka
 KAFKASTATUS=$(curl -u admin:admin -X GET http://sandbox.hortonworks.com:8080/api/v1/clusters/Sandbox/services/KAFKA | grep '"state" :' | grep -Po '([A-Z]+)')

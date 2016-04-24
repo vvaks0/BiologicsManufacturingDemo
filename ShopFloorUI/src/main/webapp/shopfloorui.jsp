@@ -369,15 +369,13 @@ div#deviceContainer{
 				var alertType = message.data.alertType;
 				var alertDesc = document.getElementById("prodAlert").innerHTML
 				if(alertType == "PH"){
-					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
 				}else if(alertType == "O2"){
-					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
-				}
+					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
 				}else if(alertType == "Pressure"){
-					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
-				}
+					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
 				}else if(alertType == "FlowRate"){
-					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
 				}
 			}else{
 				console.log(message)

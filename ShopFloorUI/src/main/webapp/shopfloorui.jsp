@@ -356,7 +356,7 @@ div#deviceContainer{
 				pressureGauge.draw(pressureGaugeData, pressureGaugeOptions);
 				flowRateGaugeData.setValue(0, 1, currentFlowRate);
 				flowRateGauge.draw(flowRateGaugeData, flowRateGaugeOptions);
-				flowTempGaugeData.setValue(0, 1, currentFlowTemp]);
+				flowTempGaugeData.setValue(0, 1, currentFlowTemp);
 				flowTempGauge.draw(flowTempGaugeData, flowTempGaugeOptions);
 				pressureChartData.addRows([["-" + filtrationTime, currentPressure]]);
 				pressureChart.draw(pressureChartData, pressureChartOptions);

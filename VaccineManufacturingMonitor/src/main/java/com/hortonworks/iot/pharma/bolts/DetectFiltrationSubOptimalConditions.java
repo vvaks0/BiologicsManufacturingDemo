@@ -32,12 +32,12 @@ public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
 		FiltrationStatus filtrationStatus = (FiltrationStatus) tuple.getValueByField("FiltrationStatus");
 		Map<String, Object> data = new HashMap<String, Object>();
 		
-		if(filtrationStatus.getInternalPressure() < 65){
+		if(filtrationStatus.getInternalPressure() > 65){
 			data.put("serialNumber", filtrationStatus.getSerialNumber());
 			data.put("alertType", "Pressure");
-			data.put("alertDec", "Pressure has reached critical level");
+			data.put("alertDesc", "Pressure has reached critical level");
 			bayuexClient.getChannel(alertChannel).publish(data);
-		}if(filtrationStatus.getFlowRate() < 65){
+		}if(filtrationStatus.getFlowRate() > 65){
 			data.put("serialNumber", filtrationStatus.getSerialNumber());
 			data.put("alertType", "FlowRate");
 			data.put("alertDesc", "Flow rate is reached critical level");

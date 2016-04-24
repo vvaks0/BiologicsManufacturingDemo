@@ -112,6 +112,8 @@ div#bodyContainer{
     border-right: 1px solid #D4D4D4;
     float: left;
     position: relative;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
     /* box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); */
 }
 
@@ -127,7 +129,7 @@ div#bodyContainer{
     float: left;
     position: relative;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px
+    font-size: 14px;
     /* box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1); */
 }
 
@@ -354,7 +356,7 @@ div#deviceContainer{
 				pressureGauge.draw(pressureGaugeData, pressureGaugeOptions);
 				flowRateGaugeData.setValue(0, 1, currentFlowRate);
 				flowRateGauge.draw(flowRateGaugeData, flowRateGaugeOptions);
-				flowTempGaugeData.setValue(0, 1, currentFlowRate);
+				flowTempGaugeData.setValue(0, 1, currentFlowTemp]);
 				flowTempGauge.draw(flowTempGaugeData, flowTempGaugeOptions);
 				pressureChartData.addRows([["-" + filtrationTime, currentPressure]]);
 				pressureChart.draw(pressureChartData, pressureChartOptions);
@@ -367,9 +369,15 @@ div#deviceContainer{
 				var alertType = message.data.alertType;
 				var alertDesc = document.getElementById("prodAlert").innerHTML
 				if(alertType == "PH"){
-					document.getElementById("prodAlert").innerHTML = alertDesc + '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
 				}else if(alertType == "O2"){
-					document.getElementById("prodAlert").innerHTML = alertDesc + '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+				}
+				}else if(alertType == "Pressure"){
+					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
+				}
+				}else if(alertType == "FlowRate"){
+					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc; +'</font>';
 				}
 			}else{
 				console.log(message)
@@ -571,7 +579,7 @@ div#deviceContainer{
       pressureChartData.addColumn('string', 'Day');
       pressureChartData.addColumn('number', 'Pressure');
 
-      pressureChartData.addRows([['-0',  30]]);
+      pressureChartData.addRows([['-0',  40]]);
       pressureChartOptions = {
         chart: {},
         width: 350,
@@ -594,7 +602,7 @@ div#deviceContainer{
       flowRateChartData.addColumn('string', 'Day');
       flowRateChartData.addColumn('number', 'Flow Rate');
 
-      flowRateChartData.addRows([['-0', 30]]);
+      flowRateChartData.addRows([['-0', 40]]);
       flowRateChartOptions = {
     	        chart: {},
     	        width: 350,
@@ -617,7 +625,7 @@ div#deviceContainer{
       flowTempChartData.addColumn('string', 'Day');
       flowTempChartData.addColumn('number', 'Flow Temp');
 
-      flowTempChartData.addRows([['-0', 30]]);
+      flowTempChartData.addRows([['-0', 35]]);
       flowTempChartOptions = {
     	        chart: {},
     	        width: 350,

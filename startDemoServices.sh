@@ -127,3 +127,4 @@ sudo -u hdfs hadoop fs -rm -R /user/root/.slider/cluster
 service docker start
 # Start UI servlet on Yarn using Slider
 slider create biologicsmanufacturingui --template /home/docker/dockerbuild/biologicsmanufacturingui/appConfig.json --metainfo /home/docker/dockerbuild/biologicsmanufacturingui/metainfo.json --resources /home/docker/dockerbuild/biologicsmanufacturingui/resources.json
+# TARGETAPP=$(yarn application -list | grep -Po '(application_[0-9]+_[0-9]+)\s(biologicsmanufacturingui)' | grep -Po '(application_[0-9]+_[0-9]+)')

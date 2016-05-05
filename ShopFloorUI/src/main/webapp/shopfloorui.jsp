@@ -327,6 +327,7 @@ div#deviceContainer{
 				currentTimeHours = message.data.hoursFromStart;
 				if(currentTimeHours == 0){
 					document.getElementById("prodAlert").innerHTML = '';
+					document.getElementById("filtrationAlert").innterHTML = '';  
 				}
 				currentBatch = message.data.batchNumber;
 				console.log(currentTemp + " " + currentPH + "" + currentOxygen);

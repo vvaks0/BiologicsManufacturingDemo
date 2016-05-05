@@ -63,7 +63,7 @@ public class ShopFloorUI extends HttpServlet {
 	    }
 	    
 	    public void testPubSub() {
-	    	String pubSubUrl = "http://localhost:8091/cometd";
+	    	String pubSubUrl = "http://sandbox.hortonworks.com:8091/cometd";
 	    	String techChannel = "/devicestatus";
 	    	HttpClient httpClient = new HttpClient();
 			try {

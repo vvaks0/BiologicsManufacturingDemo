@@ -34,7 +34,7 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 		if(bioReactorStatus.getDisolvedOxygen() < .07){
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());
 			data.put("alertType", "O2");
-			data.put("alertDec", "Disolved Oxygen has dropped to critical level.");
+			data.put("alertDesc", "Disolved Oxygen has dropped to critical level.");
 			bayuexClient.getChannel(alertChannel).publish(data);
 		}if(bioReactorStatus.getPhLevel() < 6.2){
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());

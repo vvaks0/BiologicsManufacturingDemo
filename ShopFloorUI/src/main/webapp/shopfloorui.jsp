@@ -313,6 +313,7 @@ div#deviceContainer{
   var flowTempChartOptions;
   var currentSelectedDiv;
   var filtrationTime = 0;
+  var filtrationClear = 0;
   
   dojo.ready(connectDeviceTopic)
   function connectDeviceTopic(){
@@ -327,7 +328,6 @@ div#deviceContainer{
 				currentTimeHours = message.data.hoursFromStart;
 				if(currentTimeHours == 0){
 					document.getElementById("prodAlert").innerHTML = '';
-					document.getElementById("filtrationAlert").innterHTML = '';  
 				}
 				currentBatch = message.data.batchNumber;
 				console.log(currentTemp + " " + currentPH + "" + currentOxygen);
@@ -353,6 +353,10 @@ div#deviceContainer{
 				currentTimeHours = message.data.hoursFromStart;
 				currentBatch = message.data.batchNumber;
 				
+				if(((filtrationTime - filtrationClear) >= 3)){
+					document.getElementById("filtrationAlert").innterHTML = '';  
+				}
+
 				pressureGaugeData.setValue(0, 1, currentPressure);
 				pressureGauge.draw(pressureGaugeData, pressureGaugeOptions);
 				flowRateGaugeData.setValue(0, 1, currentFlowRate);
@@ -375,9 +379,14 @@ div#deviceContainer{
 					document.getElementById("prodAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
 				}else if(alertType == "Pressure"){
 					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
+					filtrationClear = filtrationTime;
 				}else if(alertType == "FlowRate"){
 					document.getElementById("filtrationAlert").innerHTML = '<br><font color="red">ALERT: ' + message.data.alertDesc +'</font>';
+					filtrationClear = filtrationTime;
 				}
+			}else if(message.channel == predictionChannel){
+				console.log(message)
+				document.getElementById("prodAlert").innerHTML = '<br><font color="orange">PREDICTION: ' + message.data.alertDesc +'</font>';
 			}else{
 				console.log(message)
 			}	

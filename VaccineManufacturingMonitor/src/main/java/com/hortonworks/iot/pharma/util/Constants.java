@@ -11,6 +11,7 @@ public class Constants {
 	public static final String bioReactorStatusChannel = "/bioReactorStatus";
 	public static final String filtrationStatusChannel = "/filtrationStatus";
 	public static final String alertChannel = "/alert";
+	public static final String predictionChannel = "/prediction";
 	
 	public static final String nameNode = "hdfs://sandbox.hortonworks.com:8020";
 	public static final String hivePath = "/demo/data/transaction_logs";

@@ -8,6 +8,8 @@ import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
 import org.apache.spark.mllib.regression.LinearRegressionWithSGD;
+import org.cometd.bayeux.Message;
+import org.cometd.bayeux.client.ClientSessionChannel;
 import org.cometd.client.BayeuxClient;
 import org.cometd.client.transport.ClientTransport;
 import org.cometd.client.transport.LongPollingTransport;
@@ -28,33 +30,63 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 	private LinearRegressionModel model;
 	private String pubSubUrl = Constants.pubSubUrl;
 	private String alertChannel = Constants.alertChannel;
-	private String predictionChannel = Constants.alertChannel;
+	private String predictionChannel = Constants.predictionChannel;
 	private BayeuxClient bayuexClient;
 	private OutputCollector collector;
+	private double yieldPrediction = 0;
+	private double yieldOptimalThreshold = 7500000.00;
 	
 	public void execute(Tuple tuple)  {
 		BioReactorStatus bioReactorStatus = (BioReactorStatus) tuple.getValueByField("BioReactorStatus");
 		Map<String, Object> data = new HashMap<String, Object>();
+		System.out.println("********************************** Hours From Start: " + bioReactorStatus.getHoursFromStart());
 		
-		if(bioReactorStatus.getDisolvedOxygen() <= .07){
+		if(bioReactorStatus.getHoursFromStart() == 108){
+			System.out.println("********************************** Calculating Expected Yield for this Batch.....");
+			double[] vector = {bioReactorStatus.getGlucoseLevel(), bioReactorStatus.getLactateLevel(), bioReactorStatus.getPhLevel(), bioReactorStatus.getDisolvedOxygen()};
+			System.out.println("********************************** Input Vector: " + bioReactorStatus.getGlucoseLevel() + ", " + bioReactorStatus.getLactateLevel() + ", " + bioReactorStatus.getPhLevel() + ", " + bioReactorStatus.getDisolvedOxygen());
+			yieldPrediction = model.predict(Vectors.dense(vector));
+			System.out.println("********************************** Predicted Yield : " + yieldPrediction);
+			if( yieldPrediction < yieldOptimalThreshold){
+				System.out.println("********************************** Predicted Yield is significanly sub optimal, sending alert.... ");
+				data.put("serialNumber", bioReactorStatus.getSerialNumber());
+				data.put("alertType", "Yield");
+				data.put("alertDesc", "YIELD TRENDING SUB-OPTIMAL.");
+				bayuexClient.getChannel(predictionChannel).publish(data);
+				
+				// Subscription to channels
+				 ClientSessionChannel channel = bayuexClient.getChannel(predictionChannel);
+				 channel.subscribe(new ClientSessionChannel.MessageListener()
+				 {
+				     public void onMessage(ClientSessionChannel channel, Message message)
+				     {
+				    	 System.out.println("********************************** Prediction Delivery has been Verified ");
+				     }
+				 });
+			}
+		}else{
+			System.out.println("********************************** Predicted Yield is within acceptable range");
+		}
+		
+		System.out.println("********************************** Ensuring Compliance with Rule Set....");
+		if(bioReactorStatus.getDisolvedOxygen() <= .05){
+			System.out.println("********************************** Disolved Oxygen is critical, causing accelerated yield degradation");
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());
 			data.put("alertType", "O2");
 			data.put("alertDesc", "Disolved Oxygen has dropped to critical level.");
 			bayuexClient.getChannel(alertChannel).publish(data);
-		}if(bioReactorStatus.getPhLevel() < 6.2){
+		}else{
+			System.out.println("********************************** Disolved Oxygen is within and acceptable range");
+		}
+		
+		if(bioReactorStatus.getPhLevel() < 6.0){
+			System.out.println("********************************** PH level is critical, causing accelerated yield degradation");
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());
 			data.put("alertType", "PH");
 			data.put("alertDesc", "PH levels have dropped to critical level.");
 			bayuexClient.getChannel(alertChannel).publish(data);
-		}if(bioReactorStatus.getHoursFromStart() == 108){
-			double[] vector = {bioReactorStatus.getGlucoseLevel(), bioReactorStatus.getLactateLevel(), bioReactorStatus.getPhLevel(), bioReactorStatus.getDisolvedOxygen()};
-			
-			if(model.predict(Vectors.dense(vector)) < 7500000){	
-				data.put("serialNumber", bioReactorStatus.getSerialNumber());
-				data.put("alertType", "Yield");
-				data.put("alertDesc", "Predicted yield is significantly sub optimal.");
-				bayuexClient.getChannel(predictionChannel).publish(data);
-			}
+		}else{
+			System.out.println("********************************** PH level is within and acceptable range");
 		}
 		
 		collector.ack(tuple);

@@ -179,7 +179,7 @@ done
 echo "*********************************Importing NIFI Template..."
 # Import NIFI Template
 #TEMPLATEID=$(curl -v -F template=@"Nifi/template/BiologicsProcess.xml" -X POST http://sandbox.hortonworks.com:9090/nifi-api/controller/templates | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
-TEMPLATEID=$(curl -v -F template=@"Nifi/template/BiologicsProcess.xml" -X POST http://sandbox.hortonworks.com:9090/nifi-api/controller/templates | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
+TEMPLATEID=$(curl -v -F template=@"Nifi/template/BiologicsManufacturingFlow.xml" -X POST http://sandbox.hortonworks.com:9090/nifi-api/controller/templates | grep -Po '<id>([a-z0-9-]+)' | grep -Po '>([a-z0-9-]+)' | grep -Po '([a-z0-9-]+)')
 sleep 2
 echo "*********************************Instantiating NIFI Flow..."
 # Instantiate NIFI Template

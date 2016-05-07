@@ -75,3 +75,4 @@ The UI shows several stages of a vaccine manufacturing process.
 Click on the different stages of the process to see real time data associated with that stage of the process.
 When critical thresholds are breached, alerts are visible under the title of the affected stage.
 
+![Alt text](/screenshot/BiologicsManufacturingDemo.png "ShopFloorUI")

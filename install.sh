@@ -284,7 +284,7 @@ sudo -u hdfs hadoop fs -chown root:hdfs /user/root/
 mkdir /home/docker/
 mkdir /home/docker/dockerbuild/
 mkdir /home/docker/dockerbuild/biologicsmanufacturingui
-cd ../SliderConfig
+cd SliderConfig
 cp -vf appConfig.json /home/docker/dockerbuild/biologicsmanufacturingui
 cp -vf metainfo.json /home/docker/dockerbuild/biologicsmanufacturingui
 cp -vf resources.json /home/docker/dockerbuild/biologicsmanufacturingui

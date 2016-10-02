@@ -261,10 +261,10 @@ div#deviceContainer{
   var alertChannel = "/alert";
   var predictionChannel = "/prediction";
   var contentString;
-  var greenIcon = "images/stb_normal_25.png";
-  var yellowIcon = "images/stb_warning_25.png";
-  var redIcon = "images/stb_alert_25.png";
-  var carIcon = {url:"images/car.png",size: new google.maps.Size(30, 30),origin: new google.maps.Point(0, 0),anchor: new google.maps.Point(15, 15)};
+  //var greenIcon = "images/stb_normal_25.png";
+  //var yellowIcon = "images/stb_warning_25.png";
+  //var redIcon = "images/stb_alert_25.png";
+  //var carIcon = {url:"images/car.png",size: new google.maps.Size(30, 30),origin: new google.maps.Point(0, 0),anchor: new google.maps.Point(15, 15)};
   var bioReactorIcon = "images/ge_wave_200.png";
   var chromatographyIcon = "images/ge_akta_ready.png";
   var map;

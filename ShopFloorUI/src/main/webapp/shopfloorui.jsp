@@ -247,7 +247,7 @@ div#deviceContainer{
 }
 */
 </style>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>  -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/dojo/1.7.8/dojo/dojo.js"></script>
 <script type="text/javascript">

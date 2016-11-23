@@ -18,6 +18,14 @@ import org.eclipse.jetty.client.HttpClient;
 import com.hortonworks.iot.pharma.events.BioReactorStatus;
 import com.hortonworks.iot.pharma.util.Constants;
 
+import org.apache.storm.task.OutputCollector;
+import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Tuple;
+
+/*
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -25,6 +33,7 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+*/
 
 public class DetectSubOptimalConditions extends BaseRichBolt{
 	private LinearRegressionModel model;
@@ -69,7 +78,7 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 		}
 		
 		System.out.println("********************************** Ensuring Compliance with Rule Set....");
-		if(bioReactorStatus.getDisolvedOxygen() <= .05){
+		if(bioReactorStatus.getDisolvedOxygen() <= .06){
 			System.out.println("********************************** Disolved Oxygen is critical, causing accelerated yield degradation");
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());
 			data.put("alertType", "O2");
@@ -79,7 +88,7 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 			System.out.println("********************************** Disolved Oxygen is within and acceptable range");
 		}
 		
-		if(bioReactorStatus.getPhLevel() < 6.0){
+		if(bioReactorStatus.getPhLevel() <= 6.0){
 			System.out.println("********************************** PH level is critical, causing accelerated yield degradation");
 			data.put("serialNumber", bioReactorStatus.getSerialNumber());
 			data.put("alertType", "PH");

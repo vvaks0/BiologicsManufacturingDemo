@@ -2,6 +2,12 @@ package com.hortonworks.iot.pharma.topology;
 
 import java.util.UUID;
 
+import org.apache.storm.Config;
+import org.apache.storm.LocalCluster;
+import org.apache.storm.StormSubmitter;
+import org.apache.storm.generated.AlreadyAliveException;
+import org.apache.storm.generated.AuthorizationException;
+import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.hdfs.bolt.HdfsBolt;
 import org.apache.storm.hdfs.bolt.format.DefaultFileNameFormat;
 import org.apache.storm.hdfs.bolt.format.DelimitedRecordFormat;
@@ -12,6 +18,12 @@ import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy;
 import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy.Units;
 import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy;
+import org.apache.storm.kafka.Broker;
+import org.apache.storm.kafka.KafkaSpout;
+import org.apache.storm.kafka.SpoutConfig;
+import org.apache.storm.kafka.ZkHosts;
+import org.apache.storm.spout.SchemeAsMultiScheme;
+import org.apache.storm.topology.TopologyBuilder;
 
 import com.hortonworks.iot.pharma.bolts.DetectFiltrationSubOptimalConditions;
 import com.hortonworks.iot.pharma.bolts.DetectSubOptimalConditions;
@@ -20,7 +32,7 @@ import com.hortonworks.iot.pharma.bolts.PublishFiltrationEvents;
 import com.hortonworks.iot.pharma.util.BioReactorEventJSONScheme;
 import com.hortonworks.iot.pharma.util.Constants;
 import com.hortonworks.iot.pharma.util.FiltrationEventJSONScheme;
-
+/*
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -33,6 +45,7 @@ import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.kafka.ZkHosts;
+*/
 
 public class VaccineManufacturingMonitorTopology {
 	
@@ -58,7 +71,7 @@ public class VaccineManufacturingMonitorTopology {
  		     .withSyncPolicy(syncPolicy);
       
 		Config conf = new Config(); 
-		BrokerHosts hosts = new ZkHosts(Constants.zkConnString);
+		ZkHosts hosts = new ZkHosts(Constants.zkConnString);
      
 		SpoutConfig incomingBioReactorEventsKafkaSpoutConfig = new SpoutConfig(hosts, Constants.IncomingBioReactorTopicName, "/" + Constants.IncomingBioReactorTopicName, UUID.randomUUID().toString());
 		incomingBioReactorEventsKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new BioReactorEventJSONScheme());
@@ -80,12 +93,20 @@ public class VaccineManufacturingMonitorTopology {
 		builder.setBolt("PublishFiltrationEvents", new PublishFiltrationEvents(), 1).shuffleGrouping("IncomingFiltrationKafkaSpout");
 		builder.setBolt("DetectFiltrationSubOptimalConditions", new DetectFiltrationSubOptimalConditions(), 1).shuffleGrouping("PublishFiltrationEvents");
 		
-		//LocalCluster cluster = new LocalCluster();
 		conf.setNumWorkers(1);
-		conf.setMaxSpoutPending(5000);
-		conf.setMaxTaskParallelism(1);
-		//cluster.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology());
+	    conf.setMaxSpoutPending(5000);
+	    conf.setMaxTaskParallelism(1);
+	      
+	    //submitToLocal(builder, conf);
+	    submitToCluster(builder, conf);
+	 }
        
+	public static void submitToLocal(TopologyBuilder builder, Config conf){
+		LocalCluster cluster = new LocalCluster();
+		cluster.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology()); 
+	}
+		
+	public static void submitToCluster(TopologyBuilder builder, Config conf){
 		try {
 			StormSubmitter.submitTopology("VaccineManufacturingMonitor", conf, builder.createTopology());
 		} catch (AlreadyAliveException e) {

@@ -247,7 +247,7 @@ div#deviceContainer{
 }
 */
 </style>
-<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>  -->
+<!-- <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=${mapAPIKey}"></script>  -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/dojo/1.7.8/dojo/dojo.js"></script>
 <script type="text/javascript">
@@ -255,7 +255,9 @@ div#deviceContainer{
   dojo.require("dojox.cometd");
   dojo.require("dojox.cometd.longPollTransport");
   
-  var pubSubUrl = "http://sandbox.hortonworks.com:8091/cometd"; 
+  var cometdHost = "${cometdHost}";
+  var cometdPort = "${cometdPort}";
+  var pubSubUrl = "http://" + cometdHost + ":" + cometdPort + "/cometd"; 
   var bioReactorChannel = "/bioReactorStatus";
   var filtrationChannel = "/filtrationStatus";
   var alertChannel = "/alert";

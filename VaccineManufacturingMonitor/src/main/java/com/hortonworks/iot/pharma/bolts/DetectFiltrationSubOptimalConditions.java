@@ -26,14 +26,14 @@ import org.cometd.client.transport.ClientTransport;
 import org.cometd.client.transport.LongPollingTransport;
 import org.eclipse.jetty.client.HttpClient;
 
-import com.hortonworks.iot.pharma.events.BioReactorStatus;
 import com.hortonworks.iot.pharma.events.FiltrationStatus;
 import com.hortonworks.iot.pharma.util.Constants;
 
 public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
-
-	private String pubSubUrl = Constants.pubSubUrl;
-	private String alertChannel = Constants.alertChannel;
+	private static final long serialVersionUID = 1L;
+	private Constants constants;
+	private String pubSubUrl = constants.getPubSubUrl();
+	private String alertChannel = constants.getAlertChannel();
 	private BayeuxClient bayuexClient;
 	private OutputCollector collector;
 	
@@ -59,7 +59,7 @@ public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
 	@Override
 	public void prepare(Map arg0, TopologyContext arg1, OutputCollector collector) {
 		this.collector = collector;
-		
+		constants = new Constants();
 		HttpClient httpClient = new HttpClient();
 		try {
 			httpClient.start();

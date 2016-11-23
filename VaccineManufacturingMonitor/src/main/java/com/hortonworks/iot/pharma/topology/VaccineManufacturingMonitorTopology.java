@@ -18,7 +18,7 @@ import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy;
 import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy.Units;
 import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy;
-import org.apache.storm.kafka.Broker;
+import org.apache.storm.kafka.BrokerHosts;
 import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.SpoutConfig;
 import org.apache.storm.kafka.ZkHosts;
@@ -51,7 +51,8 @@ public class VaccineManufacturingMonitorTopology {
 	
 	public static void main(String[] args) {
 		TopologyBuilder builder = new TopologyBuilder();
-    
+		Constants constants = new Constants();
+		
 		// Use pipe as record boundary
 		RecordFormat format = new DelimitedRecordFormat().withFieldDelimiter(",");
 
@@ -62,24 +63,23 @@ public class VaccineManufacturingMonitorTopology {
 		FileRotationPolicy rotationPolicy = new FileSizeRotationPolicy(5.0f, Units.MB);
 
 		// Use default, Storm-generated file names
-		FileNameFormat transactionLogFileNameFormat = new DefaultFileNameFormat().withPath(Constants.hivePath);
+		FileNameFormat transactionLogFileNameFormat = new DefaultFileNameFormat().withPath(constants.getHivePath());
 		HdfsBolt LogTransactionHdfsBolt = new HdfsBolt()
- 		     .withFsUrl(Constants.nameNode)
+ 		     .withFsUrl(constants.getNameNodeUrl())
  		     .withFileNameFormat(transactionLogFileNameFormat)
  		     .withRecordFormat(format)
  		     .withRotationPolicy(rotationPolicy)
  		     .withSyncPolicy(syncPolicy);
       
 		Config conf = new Config(); 
-		ZkHosts hosts = new ZkHosts(Constants.zkConnString);
-     
-		SpoutConfig incomingBioReactorEventsKafkaSpoutConfig = new SpoutConfig(hosts, Constants.IncomingBioReactorTopicName, "/" + Constants.IncomingBioReactorTopicName, UUID.randomUUID().toString());
+		BrokerHosts hosts = new ZkHosts(constants.getZkConnString(), constants.getZkKafkaPath());
+		SpoutConfig incomingBioReactorEventsKafkaSpoutConfig = new SpoutConfig(hosts, constants.getIncomingBioReactorTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
 		incomingBioReactorEventsKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new BioReactorEventJSONScheme());
 		incomingBioReactorEventsKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
 		incomingBioReactorEventsKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 		KafkaSpout incomingBioReactorEventsKafkaSpout = new KafkaSpout(incomingBioReactorEventsKafkaSpoutConfig); 
      
-		SpoutConfig incomingFiltrationEventsKafkaSpoutConfig = new SpoutConfig(hosts, Constants.IncomingFiltrationTopicName, "/" + Constants.IncomingFiltrationTopicName, UUID.randomUUID().toString());
+		SpoutConfig incomingFiltrationEventsKafkaSpoutConfig = new SpoutConfig(hosts, constants.getIncomingFiltrationTopicName(), constants.getZkKafkaPath(), UUID.randomUUID().toString());
 		incomingFiltrationEventsKafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new FiltrationEventJSONScheme());
 		incomingFiltrationEventsKafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
 		incomingFiltrationEventsKafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();

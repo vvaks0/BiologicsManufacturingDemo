@@ -31,8 +31,9 @@ import backtype.storm.tuple.Values;
 
 public class PublishFiltrationEvents extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
-	private String pubSubUrl = Constants.pubSubUrl;
-	private String filtrationStatusChannel = Constants.filtrationStatusChannel;
+	private Constants constants;
+	private String pubSubUrl = constants.getPubSubUrl();
+	private String filtrationStatusChannel = constants.getFiltrationStatusChannel();
 	private BayeuxClient bayuexClient;
 	private OutputCollector collector;
 	
@@ -52,7 +53,7 @@ public class PublishFiltrationEvents extends BaseRichBolt {
 
 	public void prepare(Map arg0, TopologyContext arg1, OutputCollector collector) {
 		this.collector = collector;
-		
+		constants = new Constants();
 		HttpClient httpClient = new HttpClient();
 		try {
 			httpClient.start();

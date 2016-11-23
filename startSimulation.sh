@@ -23,11 +23,11 @@ NIFI_HOST_IP=$(getent hosts $NIFI_HOST | awk '{ print $1 }')
 echo "*********************************NIFI HOST: $NIFI_HOST"
 echo "*********************************NIFI HOST IP: $NIFI_HOST_IP"
 
-echo "*********************************Starting Set Top Box Simulations..."
+echo "*********************************Starting Bio-Reactor Simulation..."
 nohup java -jar DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar BioReactor 1000 Simulation $NIFI_HOST_IP > BioReactor_1000_Sim.log 2>&1&
 echo $! > BioReactor_1000_Sim.pid
 
-echo "*********************************Starting Technician Simulations..."
+echo "*********************************Starting Filtration System Simulation..."
 nohup java -jar DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar FiltrationSystem 1000 Simulation $NIFI_HOST_IP > Filtration_1000_Sim.log 2>&1&
 echo $! > Filtration_1000_Sim.pid
 

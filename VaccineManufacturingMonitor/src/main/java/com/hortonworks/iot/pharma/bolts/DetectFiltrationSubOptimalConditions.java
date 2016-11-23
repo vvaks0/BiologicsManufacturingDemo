@@ -1,6 +1,5 @@
 package com.hortonworks.iot.pharma.bolts;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +31,8 @@ import com.hortonworks.iot.pharma.util.Constants;
 public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
 	private static final long serialVersionUID = 1L;
 	private Constants constants;
-	private String pubSubUrl = constants.getPubSubUrl();
-	private String alertChannel = constants.getAlertChannel();
+	private String pubSubUrl;
+	private String alertChannel;
 	private BayeuxClient bayuexClient;
 	private OutputCollector collector;
 	
@@ -59,7 +58,9 @@ public class DetectFiltrationSubOptimalConditions extends BaseRichBolt{
 	@Override
 	public void prepare(Map arg0, TopologyContext arg1, OutputCollector collector) {
 		this.collector = collector;
-		constants = new Constants();
+		this.constants = new Constants();
+		this.pubSubUrl = constants.getPubSubUrl();
+		this.alertChannel = constants.getAlertChannel();
 		HttpClient httpClient = new HttpClient();
 		try {
 			httpClient.start();

@@ -39,9 +39,9 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 	private static final long serialVersionUID = 1L;
 	private LinearRegressionModel model;
 	private Constants constants;
-	private String pubSubUrl = constants.getPubSubUrl();
-	private String alertChannel = constants.getAlertChannel();
-	private String predictionChannel = constants.getPredictionChannel();
+	private String pubSubUrl;
+	private String alertChannel;
+	private String predictionChannel;
 	private BayeuxClient bayuexClient;
 	private OutputCollector collector;
 	private double yieldPrediction = 0;
@@ -106,7 +106,10 @@ public class DetectSubOptimalConditions extends BaseRichBolt{
 	@Override
 	public void prepare(Map arg0, TopologyContext arg1, OutputCollector collector) {
 		this.collector = collector;
-		constants = new Constants();
+		this.constants = new Constants();
+		this.pubSubUrl = constants.getPubSubUrl();
+		this.alertChannel = constants.getAlertChannel();
+		this.predictionChannel = constants.getPredictionChannel();
 		double intercept = 0.0;
 		double [] weights = {-1.7052290698567234E7,1919617.150984642,1.7148147329881586E7,-136594.27503940943};
 		model = new LinearRegressionWithSGD().createModel(Vectors.dense(weights), intercept);

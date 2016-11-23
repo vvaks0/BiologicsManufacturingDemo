@@ -369,7 +369,7 @@ service docker start
 
 #Start UI servlet in Docker
 docker run -d --net=host vvaks/cometd
-docker run -d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$COMETD_HOST --net=host vvaks/vvaks/biologicsmanufacturingui
+docker run -d -e MAP_API_KEY=$MAP_API_KEY -e ZK_HOST=$ZK_HOST -e COMETD_HOST=$COMETD_HOST --net=host vvaks/biologicsmanufacturingui
 
 echo "*********************************Wait 20 seconds for Application to Initialize..."
 sleep 20

@@ -276,7 +276,7 @@ sed -r -i "s;\{\{ZK_HOST\}\};$DATAPLANE_ZK_HOST;" $ROOT_PATH/hive-ranger-config/
 sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/hive-ranger-config/ranger-hive-audit
 
 sed -r -i "s;\{\{ZK_HOST\}\};$DATAPLANE_ZK_HOST;" $ROOT_PATH/RANGER_HIVE_PLUGIN/package/configuration/ranger-hive-audit.xml
-sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/RANGER_HIVE_PLUGIN/package/configuration/hive-ranger-config/ranger-hive-audit.xml
+sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/RANGER_HIVE_PLUGIN/package/configuration/ranger-hive-audit.xml
 
 sed -r -i "s;\{\{RANGER_URL\}\};http://$DATAPLANE_RANGER_HOST:$RANGER_ADMIN_PORT;" $ROOT_PATH/hive-ranger-config/ranger-hive-security
 sed -r -i "s;\{\{REPO_NAME\}\};$RANGER_HIVE_REPO;" $ROOT_PATH/hive-ranger-config/ranger-hive-security

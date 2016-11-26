@@ -103,6 +103,70 @@ PAYLOAD=$(echo "{\"id\":\"$REPORTING_TASK_ID\",\"revision\":{\"version\":1},\"co
 	sleep 1
 }
 
+waitForAmbari () {
+       	# Wait for Ambari
+       	LOOPESCAPE="false"
+       	until [ "$LOOPESCAPE" == true ]; do
+        TASKSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep -Po 'OK')
+        if [ "$TASKSTATUS" == OK ]; then
+                LOOPESCAPE="true"
+                TASKSTATUS="READY"
+        else
+               	AUTHSTATUS=$(curl -u admin:admin -I -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME | grep HTTP | grep -Po '( [0-9]+)'| grep -Po '([0-9]+)')
+               	if [ "$AUTHSTATUS" == 403 ]; then
+               	echo "THE AMBARI PASSWORD IS NOT SET TO: admin"
+               	echo "RUN COMMAND: ambari-admin-password-reset, SET PASSWORD: admin"
+               	exit 403
+               	else
+                TASKSTATUS="PENDING"
+               	fi
+       	fi
+       	echo "Waiting for Ambari..."
+        echo "Ambari Status... " $TASKSTATUS
+        sleep 2
+       	done
+}
+
+installRangerHivePlugin () {
+       	echo "*********************************Creating Ranger Hive Plugin service..."
+       	# Create Ranger Hive Plugin service
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RANGER_HIVE_PLUGIN
+
+       	sleep 2
+       	echo "*********************************Adding Ranger Hive Plugin component..."
+       	# Add Ranger Hive Plugin component to service
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RANGER_HIVE_PLUGIN/components/RANGER_HIVE_PLUGIN
+
+       	sleep 2
+       	echo "*********************************Adding Ranger Hive Plugin role to Host..."
+       	# Add NIFI Master role to Sandbox host
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/hosts/$HIVESERVER_HOST/host_components/RANGER_HIVE_PLUGIN
+
+       	sleep 30
+       	echo "*********************************Installing Ranger Hive Plugin Service"
+       	# Install NIFI Service
+       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Ranger Hive Plugin"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/RANGER_HIVE_PLUGIN | grep "id" | grep -Po '([0-9]+)')
+       	
+       	if [ -z $TASKID ]; then
+       		until ! [ -z $TASKID ]; do
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Ranger Hive Plugin"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}')
+       		 	echo "*********************************AMBARI TaskID " $TASKID
+       		done
+       	fi
+       	
+       	echo "*********************************AMBARI TaskID " $TASKID
+       	sleep 2
+       	LOOPESCAPE="false"
+       	until [ "$LOOPESCAPE" == true ]; do
+               	TASKSTATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/requests/$TASKID | grep "request_status" | grep -Po '([A-Z]+)')
+               	if [ "$TASKSTATUS" == COMPLETED ]; then
+                       	LOOPESCAPE="true"
+               	fi
+               	echo "*********************************Task Status" $TASKSTATUS
+               	sleep 2
+       	done
+}
+
 getNameNodeHost () {
        	NAMENODE_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/HDFS/components/NAMENODE|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
        	
@@ -211,14 +275,14 @@ echo "*********************************Setting Hive Ranger Plugin Configuration.
 sed -r -i "s;\{\{ZK_HOST\}\};$DATAPLANE_ZK_HOST;" $ROOT_PATH/hive-ranger-config/ranger-hive-audit
 sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/hive-ranger-config/ranger-hive-audit
 
-sed -r -i "s;\{\{ZK_HOST\}\};$DATAPLANE_ZK_HOST;" $ROOT_PATH/hive-ranger-config/ranger-hive-audit.xml
-sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/hive-ranger-config/ranger-hive-audit.xml
+sed -r -i "s;\{\{ZK_HOST\}\};$DATAPLANE_ZK_HOST;" $ROOT_PATH/RANGER_HIVE_PLUGIN/configuration/ranger-hive-audit.xml
+sed -r -i "s;\{\{NAMENODE_HOST\}\};$DATAPLANE_NAMENODE_HOST;" $ROOT_PATH/RANGER_HIVE_PLUGIN/configuration/hive-ranger-config/ranger-hive-audit.xml
 
 sed -r -i "s;\{\{RANGER_URL\}\};http://$DATAPLANE_RANGER_HOST:$RANGER_ADMIN_PORT;" $ROOT_PATH/hive-ranger-config/ranger-hive-security
 sed -r -i "s;\{\{REPO_NAME\}\};$RANGER_HIVE_REPO;" $ROOT_PATH/hive-ranger-config/ranger-hive-security
 
-sed -r -i "s;\{\{RANGER_URL\}\};http://$DATAPLANE_RANGER_HOST:$RANGER_ADMIN_PORT;" $ROOT_PATH/hive-ranger-config/ranger-hive-security.xml
-sed -r -i "s;\{\{REPO_NAME\}\};$RANGER_HIVE_REPO;" $ROOT_PATH/hive-ranger-config/ranger-hive-security.xml
+sed -r -i "s;\{\{RANGER_URL\}\};http://$DATAPLANE_RANGER_HOST:$RANGER_ADMIN_PORT;" $ROOT_PATH/RANGER_HIVE_PLUGIN/configuration/ranger-hive-security.xml
+sed -r -i "s;\{\{REPO_NAME\}\};$RANGER_HIVE_REPO;" $ROOT_PATH/RANGER_HIVE_PLUGIN/configuration/ranger-hive-security.xml
 		
 		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME hive-site hive.security.authorization.enabled true
 		sleep 2
@@ -237,6 +301,13 @@ sed -r -i "s;\{\{REPO_NAME\}\};$RANGER_HIVE_REPO;" $ROOT_PATH/hive-ranger-config
 		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME  ranger-hive-policymgr-ssl $ROOT_PATH/hive-ranger-config/ranger-hive-policymgr-ssl
 		sleep 2
 		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME ranger-hive-security $ROOT_PATH/hive-ranger-config/ranger-hive-security
+
+echo "*********************************Loading and Installing Ranger Hive Plugin..."
+cp -Rvf $ROOT_PATH/RANGER_HIVE_PLUGIN /var/lib/ambari-server/resources/stacks/HDP/2.5/services/
+
+ambari-server restart
+waitForAmbari
+installRangerHivePlugin
 
 echo "*********************************Setting Hive Atlas Client Configuration..."
 /var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME hive-site "atlas.rest.address" "$DATAPLANE_ATLAS_HOST:$ATLAS_PORT"

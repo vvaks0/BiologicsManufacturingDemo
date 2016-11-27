@@ -10,11 +10,11 @@ class DemoControl(Script):
 
   def stop(self, env):
     print 'Stop Simulation';
-    subprocess.Popen(["./stopSimulation.sh"])
+    subprocess.Popen(["/root/BiologicsManufacturingDemo/stopSimulation.sh"])
     
   def start(self, env):
     print 'Start Simulation';
-    subprocess.Popen(["./startSimulation.sh"])
+    subprocess.Popen(["/root/BiologicsManufacturingDemo/startSimulation.sh"])
     
   def status(self, env):
     print 'Status: ';

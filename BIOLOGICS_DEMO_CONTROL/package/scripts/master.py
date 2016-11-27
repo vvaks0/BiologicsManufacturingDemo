@@ -35,8 +35,8 @@ class DemoControl(Script):
     Execute ('rm -f '+params.install_dir+'/Filtration_1000_Sim.pid')
     
   def status(self, env):
-    self.configure(env)
     import params
+    env.set_params(params)
     check_process_status(params.install_dir+'/BioReactor_1000_Sim.pid')
     
   def configure(self, env):

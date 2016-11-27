@@ -25,6 +25,10 @@
                     <osFamily>any</osFamily>
                 </osSpecific>
             </osSpecifics>
+            <configuration-dependencies>
+        		<config-type>control-config</config-type>
+      	    </configuration-dependencies>
+            <restartRequiredAfterChange>false</restartRequiredAfterChange>
             <quickLinksConfigurations>
 				<quickLinksConfiguration>
 					<fileName>quicklinks.json</fileName>

@@ -20,24 +20,24 @@ class DemoControl(Script):
     self.configure(env)
     import params
     Execute('echo Start Simulation')
-    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar BioReactor 1000 Simulation '+params.nifi_host_ip+' > BioReactor_1000_Sim.log 2>&1 & echo $! > BioReactor_1000_Sim.pid')
+    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar BioReactor 1000 Simulation '+params.nifi_host_ip+' > '+params.nifi_host_ip+'/BioReactor_1000_Sim.log 2>&1 & echo $! > '+params.nifi_host_ip+'/BioReactor_1000_Sim.pid')
 
-    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar FiltrationSystem 1000 Simulation '+params.nifi_host_ip+' > Filtration_1000_Sim.log 2>&1 & echo $! > Filtration_1000_Sim.pid')
+    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar FiltrationSystem 1000 Simulation '+params.nifi_host_ip+' > '+params.nifi_host_ip+'/Filtration_1000_Sim.log 2>&1 & echo $! > '+params.nifi_host_ip+'/Filtration_1000_Sim.pid')
     
   def stop(self, env):
     self.configure(env)
     import params
     Execute('echo Stop Simulation')
-    Execute (format('kill -9 `cat '+params.install_dir+'BioReactor_1000_Sim.pid` >/dev/null 2>&1')) 
-    Execute (format('kill -9 `cat '+params.install_dir+'Filtration_1000_Sim.pid` >/dev/null 2>&1')) 
+    Execute (format('kill -9 `cat '+params.install_dir+'/BioReactor_1000_Sim.pid` >/dev/null 2>&1')) 
+    Execute (format('kill -9 `cat '+params.install_dir+'/Filtration_1000_Sim.pid` >/dev/null 2>&1')) 
 
-    Execute ('rm -f '+params.install_dir+'BioReactor_1000_Sim.pid')
-    Execute ('rm -f '+params.install_dir+'Filtration_1000_Sim.pid')
+    Execute ('rm -f '+params.install_dir+'/BioReactor_1000_Sim.pid')
+    Execute ('rm -f '+params.install_dir+'/Filtration_1000_Sim.pid')
     
   def status(self, env):
     self.configure(env)
     import params
-    check_process_status(params.install_dir+'BioReactor_1000_Sim.pid')
+    check_process_status(params.install_dir+'/BioReactor_1000_Sim.pid')
     
   def configure(self, env):
     import params

@@ -1,0 +1,24 @@
+{
+  "name": "default",
+  "description": "default quick links configuration",
+  "configuration": {
+    "protocol":
+    {
+      "type":"http_only",
+      "checks":[]
+    },
+
+    "links": [
+      {
+        "name": "biologics_manufacturing_dashboard",
+        "label": "Biologics Manufacturing Dashboard",
+        "requires_user_name": "false",
+        "component_name": "NIFI_MASTER",
+        "url":"%@://%@:%@/ShopFloorUI/DeviceMap",
+        "port":{
+          "http_default_port": "8090"
+        }
+      }
+    ]
+  }
+}

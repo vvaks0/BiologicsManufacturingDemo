@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<metainfo>
+    <schemaVersion>2.0</schemaVersion>
+    <services>
+        <service>
+            <name>BIOLOGICS_DEMO_CONTROL</name>
+            <displayName>Ranger Hive Plugin</displayName>
+            <comment>Utility to start and stop Bioreactor and Filtration system for the Biologics Yield Optimization Demo</comment>
+            <version>0.1.0</version>
+            <components>
+                <component>
+                    <name>BIOLOGICS_DEMO_CONTROL</name>
+                    <displayName>Biologics Demo Control</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1</cardinality>
+                    <commandScript>
+                        <script>scripts/master.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+        		</component>
+            </components>
+            <osSpecifics>
+                <osSpecific>
+                    <osFamily>any</osFamily>
+                </osSpecific>
+            </osSpecifics>
+            <quickLinksConfigurations>
+				<quickLinksConfiguration>
+					<fileName>quicklinks.json</fileName>
+					<default>true</default>
+				</quickLinksConfiguration>
+			</quickLinksConfigurations>
+        </service>
+    </services>
+</metainfo>

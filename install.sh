@@ -363,6 +363,12 @@ getAtlasHost () {
        	echo $ATLAS_HOST
 }
 
+getNifiHost () {
+       	NIFI_HOST=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI/components/NIFI_MASTER|grep "host_name"|grep -Po ': "([a-zA-Z0-9\-_!?.]+)'|grep -Po '([a-zA-Z0-9\-_!?.]+)')
+
+       	echo $NIFI_HOST
+}
+
 export JAVA_HOME=/usr/jdk64
 NAMENODE_HOST=$(getNameNodeHost)
 export NAMENODE_HOST=$NAMENODE_HOST
@@ -380,6 +386,8 @@ ATLAS_HOST=$(getAtlasHost)
 export ATLAS_HOST=$ATLAS_HOST
 COMETD_HOST=$AMBARI_HOST
 export COMETD_HOST=$COMETD_HOST
+NIFI_HOST=$(getNifiHost)
+export NIFI_HOST=$NIFI_HOST
 env
 
 echo "export NAMENODE_HOST=$NAMENODE_HOST" >> /etc/bashrc
@@ -389,6 +397,7 @@ echo "export ATLAS_HOST=$ATLAS_HOST" >> /etc/bashrc
 echo "export HIVE_METASTORE_HOST=$HIVE_METASTORE_HOST" >> /etc/bashrc
 echo "export HIVE_METASTORE_URI=$HIVE_METASTORE_URI" >> /etc/bashrc
 echo "export COMETD_HOST=$COMETD_HOST" >> /etc/bashrc
+echo "export NIFI_HOST=$NIFI_HOST" >> /etc/bashrc
 
 echo "export NAMENODE_HOST=$NAMENODE_HOST" >> ~/.bash_profile
 echo "export ZK_HOST=$ZK_HOST" >> ~/.bash_profile
@@ -397,6 +406,7 @@ echo "export ATLAS_HOST=$ATLAS_HOST" >> ~/.bash_profile
 echo "export HIVE_METASTORE_HOST=$HIVE_METASTORE_HOST" >> ~/.bash_profile
 echo "export HIVE_METASTORE_URI=$HIVE_METASTORE_URI" >> ~/.bash_profile
 echo "export COMETD_HOST=$COMETD_HOST" >> ~/.bash_profile
+echo "export NIFI_HOST=$NIFI_HOST" >> ~/.bash_profile
 
 . ~/.bash_profile
 

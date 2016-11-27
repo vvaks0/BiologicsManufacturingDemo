@@ -15,5 +15,10 @@
     <value>https://github.com/vakshorton/DataSimulators.git</value>
     <description>Online location to download Simulator package</description>
   </property> 
-  
+
+  <property require-input="true">
+    <name>biodemocontrol.nifi_host_ip</name>
+    <value></value>
+    <description>IP address of host where Nifi is listening</description>
+  </property>   
 </configuration>

@@ -20,9 +20,9 @@ class DemoControl(Script):
     self.configure(env)
     import params
     Execute('echo Start Simulation')
-    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar BioReactor 1000 Simulation $NIFI_HOST_IP > BioReactor_1000_Sim.log 2>&1 & echo $! > BioReactor_1000_Sim.pid')
+    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar BioReactor 1000 Simulation '+params.nifi_host_ip+' > BioReactor_1000_Sim.log 2>&1 & echo $! > BioReactor_1000_Sim.pid')
 
-    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar FiltrationSystem 1000 Simulation $NIFI_HOST_IP > Filtration_1000_Sim.log 2>&1 & echo $! > Filtration_1000_Sim.pid')
+    Execute('nohup java -jar '+params.install_dir+'/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar FiltrationSystem 1000 Simulation '+params.nifi_host_ip+' > Filtration_1000_Sim.log 2>&1 & echo $! > Filtration_1000_Sim.pid')
     
   def stop(self, env):
     self.configure(env)

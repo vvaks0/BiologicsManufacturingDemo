@@ -7,3 +7,4 @@ config = Script.get_config()
 
 install_dir = config['configurations']['control-config']['biodemocontrol.install_dir']
 download_url = config['configurations']['control-config']['biodemocontrol.download_url']
+nifi_host_ip = config['configurations']['control-config']['biodemocontrol.nifi_host_ip']

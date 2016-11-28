@@ -505,6 +505,10 @@ cp -vf appConfig.json /home/docker/dockerbuild/biologicsmanufacturingui
 cp -vf metainfo.json /home/docker/dockerbuild/biologicsmanufacturingui
 cp -vf resources.json /home/docker/dockerbuild/biologicsmanufacturingui
 
+echo "*********************************Load Demo Control Service into Ambari"
+cd $ROOT_PATH
+cp -Rvf $ROOT_PATH/BIOLOGICS_DEMO_CONTROL /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/
+
 # Build from source
 echo "*********************************Building Vaccine Manufacturing Monitor Storm Topology"
 cd $ROOT_PATH/VaccineManufacturingMonitor
@@ -512,12 +516,12 @@ mvn clean package
 cp -vf target/VaccineManufacturingMonitor-0.0.1-SNAPSHOT.jar /home/storm
 
 #Build Device Simulator from source
-echo "*********************************Building Simulator"
-cd $ROOT_PATH
-git clone https://github.com/vakshorton/DataSimulators.git
-cd DataSimulators/DeviceSimulator
-mvn clean package
-cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PATH
+#echo "*********************************Building Simulator"
+#cd $ROOT_PATH
+#git clone https://github.com/vakshorton/DataSimulators.git
+#cd DataSimulators/DeviceSimulator
+#mvn clean package
+#cp -vf target/DeviceSimulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar $ROOT_PATH
 
 # Build from source
 echo "*********************************Building Nifi Atlas Reporter"

@@ -4,20 +4,20 @@
 <configuration>
 
   <property require-input="true">
-    <name>biodemocontrol.install_dir</name>
+    <name>democontrol.install_dir</name>
     <value>/root</value>
     <description>Directory under which demo control utility will be installed</description>
   </property> 
 
 
   <property require-input="true">
-    <name>biodemocontrol.download_url</name>
+    <name>democontrol.download_url</name>
     <value>https://github.com/vakshorton/DataSimulators.git</value>
     <description>Online location to download Simulator package</description>
   </property> 
 
   <property require-input="true">
-    <name>biodemocontrol.nifi_host_ip</name>
+    <name>democontrol.nifi_host_ip</name>
     <value></value>
     <description>IP address of host where Nifi is listening</description>
   </property>   

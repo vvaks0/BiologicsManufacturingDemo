@@ -196,7 +196,7 @@ installNifiService () {
        	
        	if [ -z $TASKID ]; then
        		until ! [ -z $TASKID ]; do
-       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}')
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/NIFI | grep "id" | grep -Po '([0-9]+)')
        		 	echo "*********************************AMBARI TaskID " $TASKID
        		done
        	fi
@@ -307,6 +307,56 @@ length=${#TARGETS[@]}
 	fi
 }
 
+installDemoControl () {
+		echo "*********************************Creating Demo Control service..."
+       	# Create Demo Control service
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL
+
+       	sleep 2
+       	echo "*********************************Adding Demo Control component..."
+       	# Add Demo Control component to service
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL/components/BIOLOGICS_DEMO_CONTROL
+
+       	sleep 2
+       	echo "*********************************Creating Demo Control configuration..."
+
+       	# Create and apply configuration
+       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.install_dir" "/root"
+       	sleep 2
+       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.download_url" "https://github.com/vakshorton/DataSimulators.git"
+       	sleep 2
+       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.nifi_host_ip" $(getent hosts $NIFI_HOST | awk '{ print $1 }')
+
+       	sleep 2
+       	echo "*********************************Adding Creating role to Host..."
+       	# Add NIFI Master role to Sandbox host
+       	curl -u admin:admin -H "X-Requested-By:ambari" -i -X POST http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/hosts/$AMBARI_HOST/host_components/BIOLOGICS_DEMO_CONTROL
+
+       	sleep 15
+       	echo "*********************************Installing Demo Control Service"
+       	# Install Demo Control Service
+       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL | grep "id" | grep -Po '([0-9]+)')
+       	
+       	if [ -z $TASKID ]; then
+       		until ! [ -z $TASKID ]; do
+       			TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Demo Control"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL grep "id" | grep -Po '([0-9]+)')
+       		 	echo "*********************************AMBARI TaskID " $TASKID
+       		done
+       	fi
+       	
+       	echo "*********************************AMBARI TaskID " $TASKID
+       	sleep 2
+       	LOOPESCAPE="false"
+       	until [ "$LOOPESCAPE" == true ]; do
+               	TASKSTATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/requests/$TASKID | grep "request_status" | grep -Po '([A-Z]+)')
+               	if [ "$TASKSTATUS" == COMPLETED ]; then
+                       	LOOPESCAPE="true"
+               	fi
+               	echo "*********************************Task Status" $TASKSTATUS
+               	sleep 2
+       	done
+}
+
 enablePhoenix () {
 	echo "*********************************Installing Phoenix Binaries..."
 	yum install -y phoenix
@@ -386,8 +436,6 @@ ATLAS_HOST=$(getAtlasHost)
 export ATLAS_HOST=$ATLAS_HOST
 COMETD_HOST=$AMBARI_HOST
 export COMETD_HOST=$COMETD_HOST
-NIFI_HOST=$(getNifiHost)
-export NIFI_HOST=$NIFI_HOST
 env
 
 echo "export NAMENODE_HOST=$NAMENODE_HOST" >> /etc/bashrc
@@ -533,6 +581,13 @@ deployTemplateToNifi
 echo "*********************************Starting NIFI Flow ..."
 startNifiFlow
 
+echo "*********************************Installing Demo Control Service ..."
+NIFI_HOST=$(getNifiHost)
+export NIFI_HOST=$NIFI_HOST
+echo "export NIFI_HOST=$NIFI_HOST" >> /etc/bashrc
+echo "export NIFI_HOST=$NIFI_HOST" >> ~/.bash_profile
+. ~/.bash_profile
+installDemoControl
 
 #Start Kafka
 KAFKA_STATUS=$(getServiceStatus KAFKA)

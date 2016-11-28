@@ -28,11 +28,11 @@ class DemoControl(Script):
     self.configure(env)
     import params
     Execute('echo Stop Simulation')
-    Execute (format('kill -9 `cat /var/run//BioReactor_1000_Sim.pid` >/dev/null 2>&1')) 
-    Execute (format('kill -9 `cat /var/run//Filtration_1000_Sim.pid` >/dev/null 2>&1')) 
+    Execute (format('kill -9 `cat /var/run/BioReactor_1000_Sim.pid` >/dev/null 2>&1')) 
+    Execute (format('kill -9 `cat /var/run/Filtration_1000_Sim.pid` >/dev/null 2>&1')) 
 
-    Execute ('rm -f /var/run//BioReactor_1000_Sim.pid')
-    Execute ('rm -f /var/run//Filtration_1000_Sim.pid')
+    Execute ('rm -f /var/run/BioReactor_1000_Sim.pid')
+    Execute ('rm -f /var/run/Filtration_1000_Sim.pid')
     
   def status(self, env):
     import params

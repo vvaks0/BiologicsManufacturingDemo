@@ -319,11 +319,21 @@ installDemoControl () {
 
        	sleep 2
        	echo "*********************************Creating Demo Control configuration..."
-
+		
+		tee control-config <<-'EOF'
+			"properties" : {
+"democontrol.download_url" : "https://github.com/vakshorton/DataSimulators.git",
+"democontrol.install_dir" : "/root",
+"democontrol.nifi_host_ip" : " "
+			}
+		EOF
+		
+		/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config control-config
+		
        	# Create and apply configuration
-       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.install_dir" "/root"
-       	sleep 2
-       	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.download_url" "https://github.com/vakshorton/DataSimulators.git"
+       	#/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.install_dir" "/root"
+       	#sleep 2
+       	#/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.download_url" "https://github.com/vakshorton/DataSimulators.git"
        	sleep 2
        	/var/lib/ambari-server/resources/scripts/configs.sh set $AMBARI_HOST $CLUSTER_NAME control-config "democontrol.nifi_host_ip" $(getent hosts $NIFI_HOST | awk '{ print $1 }')
 
@@ -335,7 +345,7 @@ installDemoControl () {
        	sleep 15
        	echo "*********************************Installing Demo Control Service"
        	# Install Demo Control Service
-       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Nifi"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL | grep "id" | grep -Po '([0-9]+)')
+       	TASKID=$(curl -u admin:admin -H "X-Requested-By:ambari" -i -X PUT -d '{"RequestInfo": {"context" :"Install Install Demo Control"}, "Body": {"ServiceInfo": {"maintenance_state" : "OFF", "state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/BIOLOGICS_DEMO_CONTROL | grep "id" | grep -Po '([0-9]+)')
        	
        	if [ -z $TASKID ]; then
        		until ! [ -z $TASKID ]; do

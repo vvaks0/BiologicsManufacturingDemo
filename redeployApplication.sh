@@ -36,6 +36,10 @@ PAYLOAD=$(echo "{\"id\":\"$REPORTING_TASK_ID\",\"revision\":{\"version\":1},\"co
 	sleep 1
 }
 
+echo "*********************************Setting Environment..."
+. ~/.bash_profile
+env
+
 #cd $ROOT_PATH/DataPlaneUtils
 #mvn clean package
 #java -jar target/DataPlaneUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar

@@ -1,9 +1,16 @@
 #!/bin/bash
 
+echo "*********************************Setting Environment..."
+. ~/.bash_profile
+
 export NIFI_HOST=$1
 export NIFI_PORT=$2
 export ATLAS_HOST=$3
 export ATLAS_PORT=$4
+export HIVESERVER_HOST=$5
+export HIVESERVER_PORT=$6
+
+env
 
 retargetNifiFlowReporter() {
 	sleep 1
@@ -35,10 +42,6 @@ PAYLOAD=$(echo "{\"id\":\"$REPORTING_TASK_ID\",\"revision\":{\"version\":1},\"co
 	curl -d "$PAYLOAD" -H "Content-Type: application/json" -X PUT http://$NIFI_HOST:$NIFI_PORT/nifi-api/reporting-tasks/$REPORTING_TASK_ID
 	sleep 1
 }
-
-echo "*********************************Setting Environment..."
-. ~/.bash_profile
-env
 
 #cd $ROOT_PATH/DataPlaneUtils
 #mvn clean package

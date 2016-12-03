@@ -54,6 +54,9 @@ echo "*********************************Recreating TransactionHistory Table..."
 # Redeploy Storm Topology to send topology meta data to Atlas
 echo "*********************************Redeploying Storm Topology..."
 storm kill VaccineManufacturingMonitor
+
+curl -u admin:admin -X DELETE 'http://$ATLAS_HOST:$ATLAS_PORT/api/atlas/entities?type=storm_topology&property=qualifiedName&value=VaccineManufacturingMonitor'
+
 storm jar /home/storm/VaccineManufacturingMonitor-0.0.1-SNAPSHOT.jar com.hortonworks.iot.pharma.topology.VaccineManufacturingMonitorTopology
 
 # Start Nifi Flow Reporter to send flow meta data to Atlas

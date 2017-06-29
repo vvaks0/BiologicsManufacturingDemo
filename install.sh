@@ -1,21 +1,53 @@
 #!/bin/bash
 
-serviceExists () {
-       	SERVICE=$1
-       	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"status" : ' | grep -Po '([0-9]+)')
-
-       	if [ "$SERVICE_STATUS" == 404 ]; then
-       		echo 0
-       	else
-       		echo 1
-       	fi
-}
-
-getServiceStatus () {
-       	SERVICE=$1
-       	SERVICE_STATUS=$(curl -u admin:admin -X GET http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER_NAME/services/$SERVICE | grep '"state" :' | grep -Po '([A-Z]+)')
-
-       	echo $SERVICE_STATUS
+installUtils () {
+	echo "*********************************Installing WGET..."
+	yum install -y wget
+	
+	echo "*********************************Installing Maven..."
+	wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O 	/etc/yum.repos.d/epel-apache-maven.repo
+	if [ $(cat /etc/system-release|grep -Po Amazon) == Amazon ]; then
+		sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+	fi
+	yum install -y apache-maven
+	if [ $(cat /etc/system-release|grep -Po Amazon) == Amazon ]; then
+		alternatives --install /usr/bin/java java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java 20000
+		alternatives --install /usr/bin/javac javac /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/javac 20000
+		alternatives --install /usr/bin/jar jar /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/jar 20000
+		alternatives --auto java
+		alternatives --auto javac
+		alternatives --auto jar
+		ln -s /usr/lib/jvm/java-1.8.0 /usr/lib/jvm/java
+	fi
+	
+	echo "*********************************Installing GIT..."
+	yum install -y git
+	
+	echo "*********************************Installing Docker..."
+	echo " 				  *****************Installing Docker via Yum..."
+	if [ $(cat /etc/system-release|grep -Po Amazon) == Amazon ]; then
+		yum install -y docker
+	else
+		echo " 				  *****************Adding Docker Yum Repo..."
+		tee /etc/yum.repos.d/docker.repo <<-'EOF'
+		[dockerrepo]
+		name=Docker Repository
+		baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
+		enabled=1
+		gpgcheck=1
+		gpgkey=https://yum.dockerproject.org/gpg
+		EOF
+		rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+		yum install -y docker-io
+	fi
+	
+	echo " 				  *****************Configuring Docker Permissions..."
+	groupadd docker
+	gpasswd -a yarn docker
+	echo " 				  *****************Registering Docker to Start on Boot..."
+	service docker start
+	chkconfig --add docker
+	chkconfig docker on
 }
 
 waitForService () {
@@ -422,9 +454,9 @@ sleep 10
 
 if [ ! -d "/usr/jdk64" ]; then
 	echo "*********************************Install and Enable Oracle JDK 8"
-	wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz"
-	tar -vxzf jdk-8u101-linux-x64.tar.gz -C /usr
-	mv /usr/jdk1.8.0_101 /usr/jdk64
+	wget http://public-repo-1.hortonworks.com/ARTIFACTS/jdk-8u77-linux-x64.tar.gz
+	tar -vxzf jdk-8u77-linux-x64.tar.gz -C /usr
+	mv /usr/jdk1.8.0_77 /usr/jdk64
 	alternatives --install /usr/bin/java java /usr/jdk64/bin/java 3
 	alternatives --install /usr/bin/javac javac /usr/jdk64/bin/javac 3
 	alternatives --install /usr/bin/jar jar /usr/jdk64/bin/jar 3
@@ -499,33 +531,9 @@ echo "export NIFI_HOST=$NIFI_HOST" >> ~/.bash_profile
 
 . ~/.bash_profile
 
-# Install Maven
-echo "*********************************Installing Maven..."
-wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
-yum install -y apache-maven
+echo "*********************************Installing Utlities..."
+installUtils
 
-#Install, Configure, and Start Docker
-echo "*********************************Installing Docker..."
-echo " 				  *****************Adding Docker Yum Repo..."
-tee /etc/yum.repos.d/docker.repo <<-'EOF'
-[dockerrepo]
-name=Docker Repository
-baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
-enabled=1
-gpgcheck=1
-gpgkey=https://yum.dockerproject.org/gpg
-EOF
-
-echo " 				  *****************Installing Docker via Yum..."
-rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-yum -y install docker-io
-echo " 				  *****************Configuring Docker Permissions..."
-groupadd docker
-gpasswd -a yarn docker
-echo " 				  *****************Registering Docker to Start on Boot..."
-service docker start
-chkconfig --add docker
-chkconfig docker on
 echo " 				  *****************Create /root HDFS folder for Slider..."
 hadoop fs -mkdir /user/root/
 hadoop fs -chown root:hdfs /user/root/
